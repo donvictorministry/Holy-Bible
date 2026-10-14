@@ -11,6 +11,7 @@ var DV_FILES = [
   'app.js',
   'information.js',
   'bible.js',
+  'more.js',
   'notepad.js',
   'notification.js',
   'manifest.json',
