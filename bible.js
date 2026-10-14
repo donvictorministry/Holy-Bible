@@ -700,7 +700,19 @@
     DV.addNavItem({ key: 'books', id: 'dvBibleNavBooks', html: ico('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>') + 'Books' });
     DV.addNavItem({ key: 'chapters', id: 'dvBibleNavChapters', html: ico('<rect x="3" y="5" width="18" height="14" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/>') + 'Chapters' });
     DV.addNavItem({ key: 'verses', id: 'dvBibleNavVerses', html: ico('<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>') + 'Verses' });
-    DV.addNavItem({ key: 'search', id: 'dvBibleNavSearch', html: ico('<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>') + 'Search' });
+
+
+    // Read-only access for other modules (more.js)
+    DV.bible = {
+      data: function() { return dvBData; },
+      names: dvBookNames,
+      slugs: dvBookSlugs,
+      counts: dvChapCounts,
+      slug: dvBibleSlug,
+      hl: function() { return dvHlMap; },
+      colors: dvHlColors,
+      jump: function(bi, ci, v) { dvBHl = v || 0; DV.navigate(dvBibleSlug(bi, ci)); }
+    };
 
     var dvBibleDesc = 'Read the King James Bible free, all 66 books, offline. Share any book or chapter with a link.';
     // The reader is the home screen
@@ -727,9 +739,6 @@
       open: function() { DV.showPage('dir'); if (!dvDirKeep) dvDirBook = dvBBi; dvDirKeep = false; dvDirRender('chapters'); } });
     DV.route('verses', { title: 'Verses', description: dvBibleDesc, navKey: 'verses',
       open: function() { DV.showPage('dir'); dvDirRender('verses'); } });
-    DV.route('search', { title: 'Search the Bible', description: 'Search the whole King James Bible.', navKey: 'search',
-      open: function() { DV.showPage('bible'); dvBibleOpen(); setTimeout(function() { var f = dvQ('#dvBibleFind'); if (f && !dvQ('#dvBibleRead').hidden) f.focus(); }, 60); },
-      close: dvBibleLeave });
 
     // Deep links: /matthew (book) and /john-3 (chapter)
     DV.addRouteMatcher(function(slug) {
