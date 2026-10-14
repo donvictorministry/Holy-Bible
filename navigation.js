@@ -1,107 +1,135 @@
-/* navigation.js - Handles Books, Chapters, and Verses Directories */
+/* navigation.js - Navigation, Menus, Directories, and Modal Sheets */
 const Navigation = (function () {
-  let selectedBookIndex = 0;
-  let selectedChapterIndex = 0;
+  let selectedBookIdx = 0;
+  let selectedChapterIdx = 0;
 
+  const scrim = document.getElementById('globalScrim');
+  const drawer = document.getElementById('sidebarDrawer');
   const directorySheet = document.getElementById('directorySheet');
-  const modalScrim = document.getElementById('modalScrim');
-  const directoryGrid = document.getElementById('directoryGrid');
-  const directoryTitle = document.getElementById('directoryTitle');
+  const searchSheet = document.getElementById('searchSheet');
+  const aboutSheet = document.getElementById('aboutSheet');
+  const contactSheet = document.getElementById('contactSheet');
 
+  const directoryTitle = document.getElementById('directoryTitle');
+  const directoryGrid = document.getElementById('directoryGrid');
   const tabBooks = document.getElementById('tabBooks');
   const tabChapters = document.getElementById('tabChapters');
   const tabVerses = document.getElementById('tabVerses');
 
-  function openDirectory() {
-    directorySheet.classList.add('open');
-    modalScrim.classList.add('open');
-    showBooks();
-  }
-
-  function closeDirectory() {
+  function closeAll() {
+    drawer.classList.remove('open');
     directorySheet.classList.remove('open');
-    modalScrim.classList.remove('open');
+    searchSheet.classList.remove('open');
+    aboutSheet.classList.remove('open');
+    contactSheet.classList.remove('open');
+    scrim.classList.remove('open');
   }
 
-  function setActiveTab(activeBtn) {
-    [tabBooks, tabChapters, tabVerses].forEach(tab => tab.classList.remove('active'));
-    activeBtn.classList.add('active');
+  function openDrawer() {
+    closeAll();
+    drawer.classList.add('open');
+    scrim.classList.add('open');
   }
 
-  // 1. Books Directory
+  function openSheet(sheetElement) {
+    closeAll();
+    sheetElement.classList.add('open');
+    scrim.classList.add('open');
+  }
+
+  function setDirectoryTab(activeTab) {
+    [tabBooks, tabChapters, tabVerses].forEach(t => t.classList.remove('active'));
+    activeTab.classList.add('active');
+  }
+
+  // 1. Books View
   function showBooks() {
-    setActiveTab(tabBooks);
+    openSheet(directorySheet);
+    setDirectoryTab(tabBooks);
     directoryTitle.textContent = "Select Book";
     directoryGrid.className = "grid-content list-books";
     directoryGrid.innerHTML = "";
 
-    window.BibleData.books.forEach((book, index) => {
+    window.BibleData.books.forEach((book, idx) => {
       const btn = document.createElement('button');
-      btn.className = "book-row-btn";
+      btn.className = "book-btn";
       btn.textContent = book.name;
       btn.onclick = () => {
-        selectedBookIndex = index;
-        showChapters(index);
+        selectedBookIdx = idx;
+        showChapters(idx);
       };
       directoryGrid.appendChild(btn);
     });
   }
 
-  // 2. Chapters Directory
-  function showChapters(bookIndex) {
-    selectedBookIndex = bookIndex;
-    setActiveTab(tabChapters);
-    const book = window.BibleData.books[selectedBookIndex];
+  // 2. Chapters View
+  function showChapters(bookIdx) {
+    selectedBookIdx = (bookIdx !== undefined) ? bookIdx : selectedBookIdx;
+    openSheet(directorySheet);
+    setDirectoryTab(tabChapters);
+    const book = window.BibleData.books[selectedBookIdx];
     directoryTitle.textContent = `${book.name} - Chapters`;
     directoryGrid.className = "grid-content grid-numbers";
     directoryGrid.innerHTML = "";
 
     book.chapters.forEach((ch, idx) => {
       const btn = document.createElement('button');
-      btn.className = "num-tile-btn";
+      btn.className = "num-btn";
       btn.textContent = ch.chapter;
       btn.onclick = () => {
-        selectedChapterIndex = idx;
-        showVerses(selectedBookIndex, idx);
+        selectedChapterIdx = idx;
+        showVerses(selectedBookIdx, idx);
       };
       directoryGrid.appendChild(btn);
     });
   }
 
-  // 3. Verses Directory
-  function showVerses(bookIndex, chapterIndex) {
-    selectedBookIndex = bookIndex;
-    selectedChapterIndex = chapterIndex;
-    setActiveTab(tabVerses);
-    const chapter = window.BibleData.books[selectedBookIndex].chapters[selectedChapterIndex];
+  // 3. Verses View
+  function showVerses(bookIdx, chapterIdx) {
+    selectedBookIdx = (bookIdx !== undefined) ? bookIdx : selectedBookIdx;
+    selectedChapterIdx = (chapterIdx !== undefined) ? chapterIdx : selectedChapterIdx;
+    openSheet(directorySheet);
+    setDirectoryTab(tabVerses);
+    const chapter = window.BibleData.books[selectedBookIdx].chapters[selectedChapterIdx];
     directoryTitle.textContent = `Chapter ${chapter.chapter} - Verses`;
     directoryGrid.className = "grid-content grid-numbers";
     directoryGrid.innerHTML = "";
 
-    chapter.verses.forEach((v) => {
+    chapter.verses.forEach(v => {
       const btn = document.createElement('button');
-      btn.className = "num-tile-btn";
+      btn.className = "num-btn";
       btn.textContent = v.verse;
       btn.onclick = () => {
-        closeDirectory();
-        window.App.renderPassage(selectedBookIndex, selectedChapterIndex, v.verse);
+        closeAll();
+        window.App.renderPassage(selectedBookIdx, selectedChapterIdx, v.verse);
       };
       directoryGrid.appendChild(btn);
     });
   }
 
-  // Tab click bindings
+  // Bind Buttons
+  document.getElementById('drawerOpenBtn').onclick = openDrawer;
+  document.getElementById('navBooksBtn').onclick = showBooks;
+  document.getElementById('navChaptersBtn').onclick = () => showChapters();
+  document.getElementById('navVersesBtn').onclick = () => showVerses();
+  document.getElementById('navSearchBtn').onclick = () => openSheet(searchSheet);
+
+  document.getElementById('drawerHomeBtn').onclick = closeAll;
+  document.getElementById('drawerAboutBtn').onclick = () => openSheet(aboutSheet);
+  document.getElementById('drawerContactBtn').onclick = () => openSheet(contactSheet);
+
   tabBooks.onclick = () => showBooks();
-  tabChapters.onclick = () => showChapters(selectedBookIndex);
-  tabVerses.onclick = () => showVerses(selectedBookIndex, selectedChapterIndex);
+  tabChapters.onclick = () => showChapters(selectedBookIdx);
+  tabVerses.onclick = () => showVerses(selectedBookIdx, selectedChapterIdx);
+
+  scrim.onclick = closeAll;
+  document.querySelectorAll('.close-btn').forEach(btn => btn.onclick = closeAll);
 
   return {
-    openDirectory,
-    closeDirectory,
     showBooks,
     showChapters,
     showVerses,
-    getSelectedBook: () => selectedBookIndex,
-    getSelectedChapter: () => selectedChapterIndex
+    closeAll,
+    setIndices: (b, c) => { selectedBookIdx = b; selectedChapterIdx = c; }
   };
 })();
