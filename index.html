@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#fdfcff">
+  <title>Holy Bible KJV</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Desktop Blocker Execution -->
+  <script src="blocked.js"></script>
+</head>
+<body>
+
+  <div id="app-container">
+    <!-- Top App Bar -->
+    <header class="top-app-bar">
+      <h1 class="top-bar-title" id="currentPassageTitle">Loading...</h1>
+      <button class="icon-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+        <!-- Sun/Moon Icon SVG -->
+        <svg id="themeIcon" viewBox="0 0 24 24">
+          <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Reading Interface (Bible text >= 20px) -->
+    <main id="reader-view">
+      <p style="text-align:center; margin-top: 40px;">Initializing Scripture Database...</p>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" id="navReadBtn">
+        <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+        <span>Read</span>
+      </button>
+      <button class="nav-item" id="navDirectoryBtn">
+        <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+        <span>Directory</span>
+      </button>
+      <button class="nav-item" id="navSearchBtn">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <span>Search</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Background Scrim -->
+  <div class="scrim" id="modalScrim"></div>
+
+  <!-- Bottom Sheet 1: Directory (Books, Chapters, Verses) -->
+  <section class="bottom-sheet" id="directorySheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2 class="sheet-title" id="directoryTitle">Directory</h2>
+      <button class="icon-btn" id="closeDirectoryBtn">&times;</button>
+    </div>
+    <div class="directory-tabs">
+      <button class="tab-btn active" id="tabBooks">Books</button>
+      <button class="tab-btn" id="tabChapters">Chapters</button>
+      <button class="tab-btn" id="tabVerses">Verses</button>
+    </div>
+    <div class="grid-content" id="directoryGrid"></div>
+  </section>
+
+  <!-- Bottom Sheet 2: Search -->
+  <section class="bottom-sheet" id="searchSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2 class="sheet-title">Search Scripture</h2>
+      <button class="icon-btn" id="closeSearchBtn">&times;</button>
+    </div>
+    <div class="search-box-wrap">
+      <input type="search" class="search-input" id="searchInput" placeholder="Type word or phrase (e.g. grace)...">
+    </div>
+    <div class="grid-content" id="searchResultsContainer">
+      <p style="text-align: center; color: gray;">Enter a search term above.</p>
+    </div>
+  </section>
+
+  <!-- Script Modules -->
+  <script src="navigation.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
