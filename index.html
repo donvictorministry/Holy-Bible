@@ -1,147 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="dvHtml">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#fdfcff">
-  <title>Holy Bible KJV</title>
-  
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="styles.css">
-  <script src="blocked.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1877F2" id="dvMetaTheme">
+<meta name="description" content="Read the King James Bible free, all 66 books. Works fully offline. Search, highlight and share verses.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Holy Bible KJV">
+<meta property="og:description" content="Read the King James Bible free, all 66 books. Works fully offline.">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" id="dvCanonical" href="">
+<link rel="manifest" id="dvManifestLink" href="manifest.json">
+<title>Holy Bible KJV</title>
+<link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body id="dvBody">
 
-  <!-- Top App Bar -->
-  <header class="top-app-bar">
-    <button class="icon-btn" id="drawerOpenBtn" aria-label="Open Menu">
-      <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-    </button>
-    <h1 class="top-bar-title" id="currentPassageTitle">Loading...</h1>
-    <button class="icon-btn" id="themeToggleBtn" aria-label="Toggle Theme">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
-      </svg>
-    </button>
-  </header>
+<!-- ===== HEADER ===== -->
+<header class="dv-header" id="dvHeader">
+  <button class="dv-icon-btn" id="dvHamburgerBtn" aria-label="Menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="dv-app-title">Holy Bible KJV</div>
+  <button class="dv-icon-btn" id="dvDotsBtn" aria-label="More options">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+  </button>
+</header>
 
-  <!-- Main Bible Text Area (Text >= 21px) -->
-  <main id="reader-view">
-    <p class="status-center">Opening King James Version...</p>
-  </main>
+<!-- ===== OVERLAY ===== -->
+<div class="dv-overlay" id="dvOverlay"></div>
 
-  <!-- Bottom Navigation Bar (Fixed & Always Visible) -->
-  <nav class="bottom-nav">
-    <button class="nav-item" id="navBooksBtn">
-      <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
-      <span>Books</span>
+<!-- ===== LEFT SIDEBAR ===== -->
+<aside class="dv-sidebar-left" id="dvLeftSidebar">
+  <div class="dv-sidebar-head">
+    <button class="dv-icon-btn" id="dvCloseLeft" aria-label="Back">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
-    <button class="nav-item" id="navChaptersBtn">
-      <svg viewBox="0 0 24 24"><path d="M3 5v14h18V5H3zm16 12H5V7h14v10z"/></svg>
-      <span>Chapters</span>
-    </button>
-    <button class="nav-item" id="navVersesBtn">
-      <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
-      <span>Verses</span>
-    </button>
-    <button class="nav-item" id="navSearchBtn">
-      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-      <span>Search</span>
-    </button>
-  </nav>
+    <span>Menu</span>
+  </div>
+  <nav class="dv-sidebar-nav" id="dvLeftNav"></nav>
+</aside>
 
-  <!-- Background Scrim -->
-  <div class="scrim" id="globalScrim"></div>
+<!-- ===== RIGHT SIDEBAR ===== -->
+<div class="dv-sidebar-right" id="dvRightSidebar"></div>
 
-  <!-- Material Design 3 Sidebar Navigation Drawer -->
-  <aside class="nav-drawer" id="sidebarDrawer">
-    <div class="drawer-header">
-      <div class="drawer-badge">KJV</div>
-      <h2>Holy Scripture</h2>
-      <p>Christian Education Edition</p>
+<!-- ===== MAIN ===== -->
+<main class="dv-container">
+
+  <!-- PAGE: HOME (shown only if the Bible module is removed) -->
+  <section class="dv-page dv-page-active" id="dvPageHome">
+    <div class="dv-hero">
+      <div class="dv-hero-title">Holy Bible KJV</div>
+      <div class="dv-hero-sub">King James Version. Read it anytime, even without internet.</div>
     </div>
-    <div class="drawer-menu">
-      <button class="drawer-item" id="drawerHomeBtn">
-        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        <span>Read Current Chapter</span>
-      </button>
-      <button class="drawer-item" id="drawerAboutBtn">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-        <span>About the Author</span>
-      </button>
-      <button class="drawer-item" id="drawerContactBtn">
-        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-        <span>Contact Details</span>
-      </button>
-    </div>
-  </aside>
-
-  <!-- Directory Bottom Sheet -->
-  <section class="bottom-sheet" id="directorySheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <h2 class="sheet-title" id="directoryTitle">Directory</h2>
-      <button class="icon-btn close-btn">&times;</button>
-    </div>
-    <div class="directory-tabs">
-      <button class="tab-btn" id="tabBooks">Books</button>
-      <button class="tab-btn" id="tabChapters">Chapters</button>
-      <button class="tab-btn" id="tabVerses">Verses</button>
-    </div>
-    <div class="grid-content" id="directoryGrid"></div>
+    <div class="dv-qa-title" id="dvQuickTitle">Quick Actions</div>
+    <div class="dv-quick" id="dvQuickActions"></div>
   </section>
 
-  <!-- Search Bottom Sheet -->
-  <section class="bottom-sheet" id="searchSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <h2 class="sheet-title">Search Scripture</h2>
-      <button class="icon-btn close-btn">&times;</button>
-    </div>
-    <div class="search-box-wrap">
-      <input type="search" class="search-input" id="searchInput" placeholder="Search a word or phrase...">
-    </div>
-    <div class="grid-content" id="searchResultsContainer">
-      <p class="status-center">Type above to search the entire KJV Bible.</p>
-    </div>
-  </section>
+</main>
 
-  <!-- About Author Modal Sheet -->
-  <section class="bottom-sheet" id="aboutSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <h2 class="sheet-title">About the Author</h2>
-      <button class="icon-btn close-btn">&times;</button>
-    </div>
-    <div class="content-body">
-      <h3>Professor of Christian Education</h3>
-      <p class="academic-title">PhD, Christian Education</p>
-      <hr>
-      <p>This Bible study application has been created for Christian scholars, students, and everyday disciples seeking a distraction-free, native mobile scripture reader.</p>
-      <p>Built with pure web technologies and public domain KJV text to facilitate scripture memory, classroom instruction, and devotional reflection.</p>
-    </div>
-  </section>
+<!-- ===== BOTTOM NAV (each module adds its own buttons) ===== -->
+<nav class="dv-bottom-nav" id="dvBottomNav"></nav>
 
-  <!-- Contact Modal Sheet -->
-  <section class="bottom-sheet" id="contactSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <h2 class="sheet-title">Contact & Inquiries</h2>
-      <button class="icon-btn close-btn">&times;</button>
-    </div>
-    <div class="content-body">
-      <h3>Academic & Ministry Inquiries</h3>
-      <p>For questions regarding Christian education curriculum, teaching materials, or feedback on this application:</p>
-      <div class="contact-card">
-        <strong>Academic Office:</strong>
-        <p>Department of Christian Education</p>
-        <strong>Email:</strong>
-        <p>author@christianeducation.edu</p>
-      </div>
-    </div>
-  </section>
+<!-- ===== FULLSCREEN MODAL ===== -->
+<div class="dv-modal" id="dvInfoModal">
+  <div class="dv-modal-head">
+    <button class="dv-icon-btn" id="dvCloseModal" aria-label="Back">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <div class="dv-modal-title" id="dvModalTitle"></div>
+  </div>
+  <div class="dv-modal-body" id="dvModalBody"></div>
+</div>
 
-  <script src="navigation.js"></script>
-  <script src="app.js"></script>
+<!-- ===== TOAST ===== -->
+<div class="dv-toast" id="dvToast"></div>
+
+<!-- ===== CORE ===== -->
+<script src="app.js"></script>
+
+<!-- ===== MODULES (optional: delete a file or its line and the app keeps working; add a line to onboard a new module) ===== -->
+<script src="information.js"></script>
+<script src="bible.js"></script>
+<script src="notepad.js"></script>
+<script src="notification.js"></script>
 </body>
 </html>
