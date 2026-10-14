@@ -1,42 +1,57 @@
-/* sw.js - Service Worker for Offline Bible Reading */
-const CACHE_NAME = 'bible-app-cache-v1.3';
-const ASSETS_TO_CACHE = [
+/* =====================================================================
+   SERVICE WORKER — offline support.
+   Independent module: delete this file and the app keeps working online.
+   Files that do not exist are skipped silently when caching.
+   ===================================================================== */
+var DV_CACHE = 'dv-bible-v1';
+var DV_FILES = [
   './',
-  './index.html',
-  './styles.css',
-  './blocked.js',
-  './navigation.js',
-  './app.js',
-  './manifest.json',
-  './kjv.json'
+  'index.html',
+  'styles.css',
+  'app.js',
+  'information.js',
+  'bible.js',
+  'notepad.js',
+  'notification.js',
+  'manifest.json',
+  'kjv.json'
 ];
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
+self.addEventListener('install', function(e) {
   self.skipWaiting();
+  e.waitUntil(caches.open(DV_CACHE).then(function(c) {
+    return Promise.all(DV_FILES.map(function(f) {
+      return c.add(f).catch(function() {});
+    }));
+  }));
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((k) => {
-          if (k !== CACHE_NAME) return caches.delete(k);
-        })
-      );
-    })
-  );
-  self.clients.claim();
+self.addEventListener('activate', function(e) {
+  e.waitUntil(caches.keys().then(function(keys) {
+    return Promise.all(keys.filter(function(k) { return k !== DV_CACHE; }).map(function(k) { return caches.delete(k); }));
+  }).then(function() { return self.clients.claim(); }));
 });
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => {
-      return res || fetch(e.request);
-    })
-  );
+self.addEventListener('fetch', function(e) {
+  var req = e.request;
+  if (req.method !== 'GET') return;
+  var url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
+
+  // Page loads (including deep links): network first, offline falls back to the app shell
+  if (req.mode === 'navigate') {
+    e.respondWith(fetch(req).catch(function() {
+      return caches.match('index.html').then(function(r) { return r || caches.match('./'); });
+    }));
+    return;
+  }
+
+  // Everything else: network first (always the latest files), cache as the offline fallback
+  e.respondWith(fetch(req).then(function(res) {
+    if (res && res.ok) {
+      var copy = res.clone();
+      caches.open(DV_CACHE).then(function(c) { c.put(req, copy); });
+    }
+    return res;
+  }).catch(function() { return caches.match(req); }));
 });
