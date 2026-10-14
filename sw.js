@@ -1,5 +1,5 @@
 /* sw.js - Service Worker for Offline Bible Reading */
-const CACHE_NAME = 'bible-app-cache-v1.2';
+const CACHE_NAME = 'bible-app-cache-v1.3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
