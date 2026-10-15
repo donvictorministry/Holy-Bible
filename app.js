@@ -24,6 +24,8 @@ var dvQuickActions = [];
 var dvRightModuleItems = [];
 var dvRoutes = {};
 var dvCurrentRoute = null;
+var dvMenuRoutes = {};
+var dvPrevSlug = null;
 var dvMatchers = [];
 var dvPages = { home: 'dvPageHome' };
 
@@ -97,6 +99,7 @@ function dvBuildLeftNav() {
       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + (item.icon || '') + '</svg>' +
       '<span class="dv-sidebar-item-label">' + item.label + '</span></button>';
   }
+  items.forEach(function(it) { if (it.route) dvMenuRoutes[it.route] = 'left'; });
   nav.innerHTML = html;
   nav.querySelectorAll('.dv-sidebar-item').forEach(function(btn, idx) {
     var item = items[idx];
@@ -127,6 +130,7 @@ function dvCloseAllSidebars() {
 document.getElementById('dvHamburgerBtn').addEventListener('click', dvOpenLeft);
 document.getElementById('dvDotsBtn').addEventListener('click', dvOpenRight);
 document.getElementById('dvCloseLeft').addEventListener('click', dvCloseAllSidebars);
+document.getElementById('dvHeaderSearch').addEventListener('click', function() { dvNavigate('search'); });
 document.getElementById('dvOverlay').addEventListener('click', dvCloseAllSidebars);
 
 /* ===== MODAL ===== */
@@ -190,6 +194,7 @@ function dvSetDark(on) {
 function dvBuildRightNav() {
   var box = document.getElementById('dvRightSidebar');
   box.innerHTML =
+    '<div class="dv-right-head">Holy Bible KJV</div>' +
     '<div class="dv-color-row" id="dvColorRow"></div>' +
     '<div class="dv-toggle-row">' +
       '<span class="dv-toggle-label">Dark Mode</span>' +
@@ -228,6 +233,8 @@ function dvBuildRightNav() {
       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + item.icon + '</svg>' +
       item.label + '</button>';
   }
+  allItems.forEach(function(it) { if (it.route) dvMenuRoutes[it.route] = 'right'; });
+  dvMenuRoutes['to-do'] = 'right';
   nav.innerHTML = html;
   nav.querySelectorAll('.dv-right-item').forEach(function(btn, idx) {
     btn.addEventListener('click', function() {
@@ -235,7 +242,7 @@ function dvBuildRightNav() {
       var mod = allItems[idx];
       dvCloseAllSidebars();
       if (mod.route) { dvNavigate(mod.route); return; }
-      if (typeof mod.onClick === 'function' && !mod.key) { mod.onClick(); return; }
+      if (typeof mod.onClick === 'function') { mod.onClick(); return; }
       if (key === 'close_right') return;
       if (key === 'install') { dvHandleInstall(); return; }
       if (key === 'share_app') { dvShareApp(); return; }
@@ -423,6 +430,9 @@ function dvResolve() {
   var btns = document.querySelectorAll('.dv-nav-item');
   var hit = false;
   btns.forEach(function(b) { if (b.getAttribute('data-dv-page') === navKey) hit = true; });
+  // Back from a menu screen returns to the menu it was opened from (like More)
+  if (dvPrevSlug !== null && dvMenuRoutes[dvPrevSlug] && !dvMenuRoutes[slug]) { if (dvMenuRoutes[dvPrevSlug] === 'left') dvOpenLeft(); else dvOpenRight(); }
+  dvPrevSlug = slug;
   if (route.navNone) btns.forEach(function(b) { b.classList.remove('dv-nav-active'); });
   if (hit) btns.forEach(function(b) { b.classList.toggle('dv-nav-active', b.getAttribute('data-dv-page') === navKey); });
 }
@@ -464,6 +474,8 @@ window.DV = {
   openModal: dvOpenModal,
   closeModal: dvCloseModal,
   closeSidebars: dvCloseAllSidebars,
+  openLeft: dvOpenLeft,
+  openRight: dvOpenRight,
   navigate: dvNavigate,
   closeRoute: dvCloseRoute,
   route: dvRegisterRoute,
