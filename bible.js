@@ -151,25 +151,15 @@
         '</div>' +
         '<div id="dvBibleRead" hidden>' +
           '<div class="dv-card">' +
-            '<div class="dv-card-title">King James Bible</div>' +
             '<div class="dv-bible-row" style="display:none">' +
               '<select id="dvBibleBook" class="dv-bible-sel" aria-label="Book"></select>' +
               '<select id="dvBibleCh" class="dv-bible-sel" aria-label="Chapter"></select>' +
             '</div>' +
-            '<div class="dv-bible-row">' +
-              '<button class="dv-btn dv-btn-secondary" id="dvBiblePrev">&#8249; Prev</button>' +
-              '<button class="dv-btn dv-btn-secondary" id="dvBibleNext">Next &#8250;</button>' +
-            '</div>' +
-            '<div class="dv-bible-row">' +
+            '<div class="dv-bible-row" style="margin-bottom:0">' +
               '<span class="dv-bible-a">A</span>' +
               '<input type="range" id="dvBibleSize" min="22" max="25" step="1" value="22" aria-label="Text size">' +
               '<span class="dv-bible-a" style="font-size:1.2rem;">A+</span>' +
             '</div>' +
-            '<div class="dv-bible-row">' +
-              '<button class="dv-btn dv-btn-primary" id="dvBibleShareBook">' + icoShare + 'Share Book</button>' +
-              '<button class="dv-btn dv-btn-primary" id="dvBibleShareCh">' + icoShare + 'Share Chapter</button>' +
-            '</div>' +
-            '<input id="dvBibleFind" class="dv-bible-find" type="search" placeholder="Search the Bible">' +
           '</div>' +
           '<div class="dv-card">' +
             '<div class="dv-bible-head" id="dvBibleHead"></div>' +
@@ -275,8 +265,8 @@
       dvQ('#dvBibleTip').hidden = false;
       dvQ('#dvBibleFoot').hidden = false;
       var atStart = dvBBi === 0 && dvBCi === 0, atEnd = dvBBi === 65 && dvBCi === dvBData[65].c.length - 1;
-      ['#dvBiblePrev', '#dvBiblePrev2'].forEach(function(s) { dvQ(s).disabled = atStart; });
-      ['#dvBibleNext', '#dvBibleNext2'].forEach(function(s) { dvQ(s).disabled = atEnd; });
+      dvQ('#dvBiblePrev2').disabled = atStart;
+      dvQ('#dvBibleNext2').disabled = atEnd;
       try { localStorage.setItem('dvBibleLast', dvBBi + ':' + dvBCi); } catch (e) {}
       if (dvBHl) {
         var el = dvQ('#dvBVs' + dvBHl);
@@ -372,7 +362,6 @@
     }
     function dvBibleJump(g) {
       var p = g.split(':'), bi = +p[0], ci = +p[1];
-      dvQ('#dvBibleFind').value = '';
       dvBHl = (+p[2]) + 1;
       if (bi === dvBBi && ci === dvBCi) dvBibleChapters(bi, ci);
       else DV.navigate(dvBibleSlug(bi, ci));
@@ -428,7 +417,10 @@
       dvQ('#dvBibleShImg').hidden = !ctx.image;
       dvQ('#dvBibleShareModal').classList.add('dv-active');
     }
-    function dvBibleShareClose() { dvQ('#dvBibleShareModal').classList.remove('dv-active'); }
+    function dvBibleShareClose() {
+      dvQ('#dvBibleShareModal').classList.remove('dv-active');
+      if (dvBShare && dvBShare.fromMenu) { dvBShare.fromMenu = false; DV.openRight(); }
+    }
     function dvBibleMsg() { return dvBShare.text + '\n\n' + dvBShare.url; }
     function dvBibleUrlLines(u) {
       var m = /^(https?:\/\/[^\/]+)(.*)$/.exec(u);
@@ -561,12 +553,8 @@
       dvQ('#dvBibleGo').onclick = function() { dvBibleGet(); };
       dvQ('#dvBibleBook').onchange = function() { DV.navigate(dvBibleSlug(+dvQ('#dvBibleBook').value, 0)); };
       dvQ('#dvBibleCh').onchange = function() { DV.navigate(dvBibleSlug(dvBBi, +dvQ('#dvBibleCh').value)); };
-      dvQ('#dvBiblePrev').onclick = dvQ('#dvBiblePrev2').onclick = function() { dvBibleStep(-1); };
-      dvQ('#dvBibleNext').onclick = dvQ('#dvBibleNext2').onclick = function() { dvBibleStep(1); };
-      dvQ('#dvBibleFind').oninput = function(e) {
-        clearTimeout(dvBSrch);
-        dvBSrch = setTimeout(function() { dvBibleFind(e.target.value); }, 300);
-      };
+      dvQ('#dvBiblePrev2').onclick = function() { dvBibleStep(-1); };
+      dvQ('#dvBibleNext2').onclick = function() { dvBibleStep(1); };
       dvQ('#dvBibleText').onclick = function(e) {
         if (e.target.closest('.dv-bible-more')) { dvBibleMore(); return; }
         var p = e.target.closest('.dv-bible-vs');
@@ -589,11 +577,6 @@
         clearTimeout(scT);
         scT = setTimeout(function() { try { localStorage.setItem('dvBibleScroll', JSON.stringify({ k: dvBBi + ':' + dvBCi, y: mainEl.scrollTop })); } catch (e) {} }, 400);
       }, { passive: true });
-      dvQ('#dvBibleShareBook').onclick = function() { dvBibleShareOpen(dvBibleCtxBook()); };
-      dvQ('#dvBibleShareCh').onclick = function() {
-        if (dvBMode !== 'chapter') dvBibleShow();
-        dvBibleShareOpen(dvBibleCtxChapter());
-      };
       dvQ('#dvBibleSelShare').onclick = function() { dvBibleShareOpen(dvBibleCtxVerses()); };
       dvQ('#dvBibleSelBt').onclick = function() {
         var c = dvBibleCtxVerses();
@@ -713,6 +696,22 @@
       colors: dvHlColors,
       jump: function(bi, ci, v) { dvBHl = v || 0; DV.navigate(dvBibleSlug(bi, ci)); }
     };
+
+    // Share Bible Book / Share Bible Chapter live in the right sidebar menu
+    function dvBibleShareBookNow() {
+      if (!dvBData) { DV.toast('The Bible is still being prepared'); return; }
+      var c = dvBibleCtxBook(); c.fromMenu = true;
+      dvBibleShareOpen(c);
+    }
+    function dvBibleShareChapterNow() {
+      if (!dvBData) { DV.toast('The Bible is still being prepared'); return; }
+      if (dvBMode !== 'chapter') dvBibleShow();
+      var c = dvBibleCtxChapter(); c.fromMenu = true;
+      dvBibleShareOpen(c);
+    }
+    var shIco = '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>';
+    DV.addRightItem({ key: 'bible_share_book', label: 'Share Bible Book', order: 20, icon: shIco, onClick: dvBibleShareBookNow });
+    DV.addRightItem({ key: 'bible_share_chapter', label: 'Share Bible Chapter', order: 21, icon: shIco, onClick: dvBibleShareChapterNow });
 
     var dvBibleDesc = 'Read the King James Bible free, all 66 books, offline. Share any book or chapter with a link.';
     // The reader is the home screen
