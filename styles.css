@@ -470,3 +470,12 @@ body {
 .dv-streak { text-align: center; }
 .dv-streak-n { font-size: 1.5rem; font-weight: 800; color: var(--dv-primary); }
 .dv-streak-s { font-size: 1rem; color: var(--dv-text-sub); margin-top: 4px; }
+
+/* ===== HEADER SEARCH PILL + RIGHT MENU HEADER ===== */
+.dv-header-search {
+  flex: 1; min-height: 48px; border: none; border-radius: 999px;
+  background: var(--dv-bg); color: var(--dv-text-sub);
+  font-size: 1.15rem; font-family: inherit; text-align: center; cursor: pointer;
+}
+.dv-header-search:active { background: var(--dv-border); }
+.dv-right-head { padding: 14px 16px; background: var(--dv-primary); color: #fff; font-size: 1.2rem; font-weight: 700; }
