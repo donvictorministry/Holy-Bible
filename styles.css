@@ -118,18 +118,14 @@ body {
 
 /* ===== RIGHT SIDEBAR (Chrome-style dropdown) ===== */
 .dv-sidebar-right {
-  position: fixed; top: 64px; right: 8px;
-  width: calc(100vw - 16px); max-width: 320px;
-  background: var(--dv-surface);
-  z-index: 401; border-radius: 12px;
+  position: fixed; top: 0; right: 0; height: 100dvh; width: 100dvw;
+  background: var(--dv-surface); z-index: 401;
   box-shadow: var(--dv-shadow-lg);
-  transform: translateY(-12px) scale(0.95);
-  opacity: 0; pointer-events: none;
-  transform-origin: top right;
-  transition: transform 0.2s, opacity 0.2s;
+  transform: translateX(100%); transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction: column;
   overflow: hidden;
 }
-.dv-sidebar-right.dv-open { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+.dv-sidebar-right.dv-open { transform: translateX(0); }
 .dv-right-item {
   width: 100%; background: transparent; border: none;
   display: flex; align-items: center; gap: 12px;
@@ -475,7 +471,12 @@ body {
 .dv-header-search {
   flex: 1; min-height: 48px; border: none; border-radius: 999px;
   background: var(--dv-bg); color: var(--dv-text-sub);
-  font-size: 1.15rem; font-family: inherit; text-align: center; cursor: pointer;
+  font-size: 1.15rem; font-family: inherit; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
 }
 .dv-header-search:active { background: var(--dv-border); }
 .dv-right-head { padding: 14px 16px; background: var(--dv-primary); color: #fff; font-size: 1.2rem; font-weight: 700; }
+
+/* ===== CONFETTI ===== */
+.dv-confetti { position: fixed; top: -20px; z-index: 10060; pointer-events: none; border-radius: 2px; animation: dvFall linear forwards; }
+@keyframes dvFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(108vh) rotate(720deg); opacity: 0; } }
