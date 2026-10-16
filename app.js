@@ -194,7 +194,11 @@ function dvSetDark(on) {
 function dvBuildRightNav() {
   var box = document.getElementById('dvRightSidebar');
   box.innerHTML =
-    '<div class="dv-right-head">Holy Bible KJV</div>' +
+    '<div class="dv-sidebar-head">' +
+      '<button class="dv-icon-btn" id="dvCloseRight" aria-label="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>' +
+      '<span>Holy Bible KJV</span>' +
+    '</div>' +
+    '<nav class="dv-sidebar-nav">' +
     '<div class="dv-color-row" id="dvColorRow"></div>' +
     '<div class="dv-toggle-row">' +
       '<span class="dv-toggle-label">Dark Mode</span>' +
@@ -202,8 +206,10 @@ function dvBuildRightNav() {
         '<span class="dv-toggle-thumb"></span>' +
       '</button>' +
     '</div>' +
-    '<div id="dvRightNav"></div>';
+    '<div id="dvRightNav"></div>' +
+    '</nav>';
 
+  document.getElementById('dvCloseRight').addEventListener('click', dvCloseAllSidebars);
   var colorRow = document.getElementById('dvColorRow');
   var colorHtml = '';
   for (var i = 0; i < dvThemes.length; i++) {
@@ -229,14 +235,14 @@ function dvBuildRightNav() {
   var allItems = dvRightNavItems.slice(0, -1).concat(modItems).concat(dvRightNavItems.slice(-1));
   for (var j = 0; j < allItems.length; j++) {
     var item = allItems[j];
-    html += '<button class="dv-right-item" data-dv-rkey="' + (item.key || '') + '">' +
+    html += '<button class="dv-sidebar-item" data-dv-rkey="' + (item.key || '') + '">' +
       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + item.icon + '</svg>' +
-      item.label + '</button>';
+      '<span class="dv-sidebar-item-label">' + item.label + '</span></button>';
   }
   allItems.forEach(function(it) { if (it.route) dvMenuRoutes[it.route] = 'right'; });
   dvMenuRoutes['to-do'] = 'right';
   nav.innerHTML = html;
-  nav.querySelectorAll('.dv-right-item').forEach(function(btn, idx) {
+  nav.querySelectorAll('.dv-sidebar-item').forEach(function(btn, idx) {
     btn.addEventListener('click', function() {
       var key = btn.getAttribute('data-dv-rkey');
       var mod = allItems[idx];
@@ -474,6 +480,7 @@ window.DV = {
   openModal: dvOpenModal,
   closeModal: dvCloseModal,
   closeSidebars: dvCloseAllSidebars,
+  hasRoute: function(s) { return !!dvRoutes[dvNormalize(s)]; },
   openLeft: dvOpenLeft,
   openRight: dvOpenRight,
   navigate: dvNavigate,
